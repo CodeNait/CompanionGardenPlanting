@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+    <html lang="en">
+        <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Companion Gardening</title>
+    <style>
+        /* CSS styles for the grid */
+        table {
+        border-collapse: collapse;
+        }
+
+        th, td {
+        border: 1px solid black;
+        padding: 20px; /* Increased padding for larger cells */
+        }
+
+        .plant {
+        font-weight: bold;
+        }
+
+        /* Conditional formatting for grid cells */
+        .companion {
+        background-color: #ccffcc; /* Green */
+        }
+
+        .neutral {
+        background-color: #ffff99; /* Yellow */
+        }
+
+        .enemy {
+        background-color: #ff9999; /* Red */
+        }
+
+        .selected {
+        border: 2px solid blue;
+        }
+</style>
+        </head>
+        <body>
+        <!-- Generated grid -->
+        <div>
+        <label for="rows">Rows:</label>
+        <input type="number" id="rows" value="5" min="1">
+        <label for="cols">Columns:</label>
+        <input type="number" id="cols" value="5" min="1">
+        <button onclick="generateGrid()">Generate Grid</button>
+        <br><br>
+
+        <table id="grid">
+        <!-- Grid will be dynamically generated here -->
+        </table>
+        </div>
+
+        <br>
+
+        <!-- Plant selection and status display -->
+        <div>
+        <label for="plantSelect">Select Plant:</label>
+        <select id="plantSelect">
+        <option value="none">Select a Plant</option>
+        <option value="artichoke">Artichoke</option>
+        <option value="arugula">Arugula</option>
+        <option value="asparagus">Asparagus</option>
+        <option value="bean">Bean</option>
+        <option value="beet">Beet</option>
+        <option value="bellPepper">Bell Pepper</option>
+        <option value="borage">Borage</option>
+        <option value="broccoli">Broccoli</option>
+        <option value="brusselSprout">Brussel Sprout</option>
+        <option value="cabbage">Cabbage</option>
+        <option value="carrot">Carrot</option>
+        <option value="cauliflower">Cauliflower</option>
+        <option value="cucumber">Cucumber</option>
+        <option value="celeriac">Celeriac</option>
+        <option value="chiliPepper">Chili Pepper</option>
+        <option value="chive">Chive</option>
+        <option value="collardGreens">Collard Greens</option>
+        <option value="corn">Corn</option>
+        <option value="eggplant">Eggplant</option>
+        <option value="garlic">Garlic</option>
+        <option value="kale">Kale</option>
+        <option value="kohlrabi">Kohlrabi</option>
+        <option value="leek">Leek</option>
+        <option value="lettuce">Lettuce</option>
+        <option value="mustardGreens">Mustard Greens</option>
+        <option value="okra">Okra</option>
+        <option value="onion">Onion</option>
+        <option value="parsnip">Parsnip</option>
+        <option value="pea">Pea</option>
+        <option value="potato">Potato</option>
+        <option value="radish">Radish</option>
+        <option value="rutabaga">Rutabaga</option>
+        <option value="spinach">Spinach</option>
+        <option value="summerSquash">Summer Squash</option>
+        <option value="sweetPotato">Sweet Potato</option>
+        <option value="swissChard">Swiss Chard</option>
+        <option value="tomato">Tomato</option>
+        <option value="turnip">Turnip</option>
+        <option value="winterSquash">Winter Squash</option>
+        <option value="zucchini">Zucchini</option>
+
+        <!-- Add more plant options here -->
+        </select>
+        <button onclick="plant()">Plant</button>
+        <button onclick="resetGrid()">Reset Grid</button>
+        </div>
+
+        <div id="status">Plant Status: None</div>
+
+                <script>
+                // Companion status data
+                const companionData = {
+                artichoke: ['tarragon', 'marigolds', 'lettuce', 'mint', 'nasturtiums', 'chive', 'coriander', 'borage', 'rosemary' ],
+                arugula: ['nasturtiums', 'Mint', 'dill', 'Lettuce', 'chervil','Basil', 'Sage', 'broccoli','cabbage', 'cauliflower', 'radish'],
+                asparagus: ['tomato', 'Parsley', 'Basil', 'nasturtiums', 'marigolds','Calendula', 'dill', 'cilantro','chervil', 'Comfrey', 'Borage'],
+                bean: ['corn', 'cucumber', 'potato', 'carrot', 'broccoli','cabbage', 'cauliflower', 'summerSavory','marigolds', 'nasturtiums', 'rosemary', 'radish', 'sunflower', 'strawberries'],
+                beet: ['broccoli', 'cabbage', 'cauliflower', 'onion', 'garlic','Lettuce', 'kohlrabi', 'Swiss Chard','Bush bean', 'Catnip', 'Mint', 'marigolds'],
+                bellPepper: ['tomato', 'Basil', 'oregano', 'Parsley', 'carrot','onion', 'garlic', 'Marjoram','Petunias', 'chive', 'rosemary', 'Spinach'],
+                borage: ['tomato', 'Squash', 'Zucchini', 'strawberries', 'bean','cauliflower', 'cabbage', 'kale','Garden cress', 'Bok Choy', 'broccoli', 'brusselSprouts', 'mustard Plant', 'Lettuce', 'Thyme','Sage', 'rosemary', 'cucumber','marigolds', 'Calendula', 'nasturtiums', 'dill'],
+                broccoli: ['Basil', 'Chamomile', 'dill', 'Mint', 'nasturtiums','onion', 'oregano', 'potato','rosemary', 'Sage', 'Spinach', 'Swiss Chard'],
+                brusselSprout: ['beet', 'Bush bean', 'carrot', 'celery', 'Chamomile','dill', 'Mint', 'nasturtiums','onion', 'oregano', 'Sage', 'Thyme'],
+                cabbage: ['beet', 'celery', 'Chamomile', 'dill', 'Mint','nasturtiums', 'onion', 'oregano','potato', 'Sage', 'Thyme', 'rosemary', 'tomato', 'Spinach'],
+                carrot: ['chive', 'onion', 'leek', 'rosemary', 'Sage','tomato', 'Lettuce', 'pea','radish', 'Spinach', 'cilantro', 'bean', 'nasturtiums', 'marigolds'],
+                cauliflower:['bean', 'celery', 'dill', 'Mint', 'nasturtiums','onion', 'oregano', 'potato','Sage', 'Thyme', 'beet', 'Chamomile', 'broccoli', 'cabbage', 'rosemary'],
+                cucumber : ['bean', 'broccoli', 'cabbage', 'cauliflower', 'corn','dill', 'nasturtiums', 'sunflower','radish', 'Lettuce', 'marigolds', 'oregano', 'pea', 'carrot', 'chive', 'onion'],
+                celeriac: ['bean', 'broccoli', 'cabbage', 'cauliflower', 'Lettuce','onion', 'Spinach', 'tomato','carrot', 'celery', 'chive', 'Parsley', 'Thyme', 'Sage'],
+                chiliPepper: ['Basil', 'tomato', 'oregano', 'Marjoram', 'rosemary','Thyme', 'cilantro', 'Spinach','Lettuce', 'onion', 'garlic', 'chive', 'nasturtiums', 'Calendula'],
+                chive: ['tomato', 'carrot', 'Lettuce', 'broccoli', 'pea','rosemary', 'strawberries', 'cauliflower','cabbage', 'kale', 'Garden cress', 'Bok Choy', 'brusselSprouts', 'marigolds', 'Calendula', 'nasturtiums', 'Basil'],
+                collardGreens: ['bean', 'broccoli', 'cabbage', 'cauliflower', 'brusselSprouts','carrot', 'celery', 'cilantro','dill', 'kale', 'Lettuce','Mint', 'onion', 'pea','potato', 'radish', 'Spinach','tomato'],
+                corn: ['bean', 'cucumber', 'melon', 'potato', 'pumpkin','Squash', 'sunflower', 'pea','radish', 'nasturtiums', 'marigolds', 'Amaranth', 'oregano', 'Tansy'],
+                eggplant: ['Basil', 'bean', 'Marjoram', 'Peppers', 'Spinach','Thyme', 'tomato', 'potato','nasturtiums', 'Amaranth', 'tarragon', 'Calendula', 'chive'],
+                garlic:['beet', 'broccoli', 'cabbage', 'cauliflower', 'carrot','celery', 'Chamomile', 'Lettuce','Parsley', 'Spinach', 'tomato', 'Roses', 'potato', 'Peppers', 'eggplant', 'strawberries', 'kale', 'brusselSprouts'],
+                kale: ['beet', 'celery', 'Chamomile', 'cilantro', 'dill','nasturtiums', 'onion', 'potato','Sage', 'Thyme', 'carrot', 'broccoli', 'cabbage', 'cauliflower', 'Lettuce', 'radish', 'Spinach'],
+                kohlrabi: ['beet', 'celery', 'Chamomile', 'dill', 'nasturtiums','onion', 'oregano', 'potato','Sage', 'Thyme', 'carrot', 'broccoli', 'cabbage', 'cauliflower', 'Lettuce', 'radish', 'Spinach'],
+                leek: ['carrot', 'celery', 'Lettuce', 'onion', 'Spinach','strawberries', 'broccoli', 'cabbage','cauliflower', 'beet', 'Chamomile', 'marigolds', 'dill', 'nasturtiums', 'pea'],
+                lettuce: ['beet', 'carrot', 'radish', 'strawberries', 'onion','garlic', 'chive', 'celery','broccoli', 'cabbage', 'cauliflower', 'Spinach', 'dill', 'Chamomile', 'nasturtiums', 'Mint', 'marigolds'],
+                mustardGreens: ['beet', 'carrot', 'celery', 'Lettuce', 'onion','Spinach', 'strawberries', 'broccoli','cabbage', 'cauliflower', 'dill', 'Chamomile', 'nasturtiums', 'Mint', 'marigolds'],
+                okra: ['eggplant', 'Peppers', 'tomato', 'Basil', 'cucumber','nasturtiums', 'marigolds', 'Lettuce','onion', 'sunflower', 'broccoli', 'cabbage', 'cauliflower', 'melon', 'Spinach', 'radish'],
+                onion: ['beet', 'carrot', 'broccoli', 'cabbage', 'cauliflower','Lettuce', 'Chamomile', 'tomato','strawberries', 'Peppers', 'Spinach','Parsley', 'chive', 'celery','Basil', 'nasturtiums', 'marigolds'],
+                parsnip: ['bean', 'beet', 'broccoli', 'cabbage', 'cauliflower','carrot', 'corn', 'garlic','onion', 'pea', 'radish','Spinach', 'Lettuce', 'Lettuce','Marjoram', 'Peppers', 'sunflower'],
+                pea: ['carrot', 'bean', 'corn', 'cucumber', 'potato','radish', 'Spinach', 'Lettuce','onion', 'tomato', 'marigolds', 'celery', 'Sweet Alyssum', 'chive', 'garlic'],
+                potato: ['bean', 'broccoli', 'cabbage', 'cauliflower', 'corn','marigolds', 'nasturtiums', 'Parsley','pea', 'Spinach', 'Sweet Alyssum', 'Basil', 'cilantro', 'Horseradish', 'celery', 'Chamomile'],
+                radish: ['carrot', 'pea', 'cucumber', 'Lettuce', 'Spinach','beet', 'nasturtiums', 'chervil','broccoli', 'cabbage', 'cauliflower', 'bean', 'tomato', 'Parsnips', 'Mint', 'tarragon', 'rosemary'],
+                rutabaga: ['beet', 'cabbage', 'cauliflower', 'celery', 'chervil','Lettuce', 'onion', 'pea','Spinach', 'nasturtiums', 'radish', 'carrot', 'bean', 'marigolds', 'dill'],
+                spinach: ['bean', 'broccoli', 'cabbage', 'cauliflower', 'carrot','celery', 'Lettuce', 'onion','pea', 'radish', 'strawberries', 'tomato', 'Mint', 'nasturtiums', 'oregano', 'potato', 'Swiss Chard'],
+                summerSquash: ['nasturtiums', 'marigolds', 'radish', 'corn', 'bean','pea', 'oregano', 'dill','nasturtiums', 'Borage', 'Tansy', 'tarragon', 'chive', 'Mint', 'sunflower'],
+                sweetPotato: ['bean', 'corn', 'pea', 'nasturtiums', 'oregano','marigolds', 'sunflower', 'Sweet Alyssum','radish', 'Spinach', 'Lettuce', 'chive', 'celery', 'Basil', 'Thyme'],
+                swissChard: ['bean', 'broccoli', 'cabbage', 'cauliflower', 'carrot','celery', 'Lettuce', 'onion','pea', 'radish', 'Spinach', 'tomato', 'beet', 'nasturtiums', 'dill', 'chive', 'marigolds'],
+                tomato: ['Basil', 'marigolds', 'nasturtiums', 'oregano', 'Parsley','chive', 'Borage', 'carrot','celery', 'dill', 'Mint', 'onion', 'garlic', 'rosemary', 'Asparagus'],
+                turnip: ['beet', 'carrot', 'celery', 'chive', 'onion','Spinach', 'broccoli', 'cabbage','cauliflower', 'Lettuce', 'radish', 'pea', 'bean', 'nasturtiums', 'dill', 'marigolds', 'Sage'],
+                winterSquash: ['bean', 'corn', 'nasturtiums', 'marigolds', 'radish','oregano', 'pea', 'sunflower','Sweet Alyssum', 'chive', 'Tansy', 'tarragon', 'dill', 'Basil', 'Mint'],
+                zucchini: ['bean', 'Nasturtiums', 'marigolds', 'radish', 'oregano','pea', 'sunflower', 'Sweet Alyssum','chive', 'Tansy', 'Tarragon', 'dill', 'Basil', 'Mint', 'Lettuce'], 
+                // Add more plants here with their respective companions
+                };
+
+                // Enemy status data
+                const enemyData = {
+                artichoke: ['potato', 'fennel', 'broccoli', 'cabbage', 'broccoli', 'bean', 'eggplant', 'strawberries', 'cucumber'],
+                arugula: ['bean', 'potato', 'fennel', 'cucumber', 'sunflower', 'tomato','anise', 'Rue'],
+                asparagus: ['onion', 'garlic', 'leek', 'shallot', 'potato', 'gladiolus','chive', 'shallot', 'strawberries'],
+                bean: ['onion', 'garlic', 'leek', 'shallot', 'chive', 'beet','kohlrabi', 'alliums'],
+                beet: ['Pole bean', 'Field mustard', 'Charlock', 'Wild Radish'],
+                bellPepper: ['fennel', 'kohlrabi', 'broccoli', 'cabbage', 'cauliflower', 'bean','kale', 'anise', 'dill','eggplant'],
+                borage: ['Basil', 'fennel', 'Lavender', 'rosemary', 'Mint', 'oregano'],
+                broccoli: ['strawberries', 'tomato', 'bean', 'Grapes', 'mustard', 'cabbage','cauliflower', 'brusselSprouts', 'kohlrabi','turnip', 'rutabaga'],
+                brusselSprout: ['strawberries', 'tomato', 'bean', 'Grapes', 'mustard', 'cabbage','cauliflower', 'brusselSprouts', 'kohlrabi','turnip'],
+                cabbage: ['strawberries', 'Grapes', 'mustard', 'kohlrabi', 'turnip', 'radish','broccoli', 'cauliflower', 'brusselSprouts','kale' ],
+                carrot: ['dill', 'Parsnips', 'celery', 'queenAnneLace', 'anise','fennel', 'cilantro', 'cress','Yarrow', 'wormwood'],
+                cauliflower: ['strawberries', 'tomato', 'Grapes', 'mustard', 'Peppers', 'eggplant','radish', 'kohlrabi', 'turnip','rutabaga'],
+                cucumber: ['potato', 'Sage', 'rosemary', 'Thyme', 'melon', 'tomato','Rue', 'fennel', 'broccoli','cabbage', 'cauliflower', 'eggplant', 'pumpkin', 'Squash'],
+                celeriac: ['fennel', 'cilantro', 'anise', 'dill', 'Caraway', 'Parsnips','potato', 'carrot'],
+                chiliPepper: ['fennel', 'broccoli', 'cabbage', 'cauliflower', 'bean', 'pea','kohlrabi', 'Parsley', 'dill','potato', 'tomato'],
+                chive: ['bean', 'Sage', 'garlic'],
+                collardGreens: ['mustardGreens', 'turnip', 'Peppers', 'Tomatillos', 'sunflower', 'Pole bean','strawberries'],
+                corn: ['tomato', 'celery', 'broccoli', 'cabbage', 'cauliflower', 'onion','garlic', 'leek', 'beet','carrot', 'rutabaga', 'turnip', 'kohlrabi', 'cress'],
+                eggplant: ['fennel', 'potato', 'tomato', 'Peppers', 'bean', 'dill','cucumber', 'Rue', 'broccoli','cabbage', 'cauliflower', 'kohlrabi'],
+                garlic: ['bean', 'pea', 'Asparagus', 'Sage', 'rosemary', 'Basil','Parsnips', 'Mint', 'onion','shallot', 'leek'],
+                kale: ['bean', 'pea', 'tomato', 'strawberries', 'Grapes', 'mustardGreens','Peppers', 'eggplant', 'potato','Rue', 'wormwood'],
+                kohlrabi: ['bean', 'pea', 'tomato', 'strawberries', 'Grapes', 'mustardGreens','Peppers', 'eggplant', 'potato','Rue', 'wormwood'],
+                leek:  ['bean', 'Peppers', 'garlic', 'shallot', 'chive', 'onion','garlic', 'Asparagus', 'broccoli','cabbage', 'cauliflower', 'Parsley', 'cucumber'],
+                lettuce: ['kale', 'brusselSprouts', 'Parsley', 'fennel', 'bean', 'pea','tomato', 'corn', 'sunflower','cucumber', 'potato'],
+                mustardGreens: ['bean', 'pea', 'tomato', 'kale', 'brusselSprouts', 'sunflower','potato', 'cucumber', 'corn'],
+                okra: ['potato', 'carrot', 'celery', 'Parsley', 'kale', 'brusselSprouts','beet', 'fennel', 'leek','onion', 'shallot'],
+                onion: ['bean', 'pea', 'Asparagus', 'leek', 'shallot', 'garlic','onion', 'leek', 'Sage','brusselSprouts', 'potato'],
+                parsnip: ['Parsley', 'celery', 'Caraway', 'fennel', 'dill', 'cilantro','anise', 'Lovage', 'chervil'],
+                pea: ['onion', 'garlic', 'leek', 'shallot', 'gladiolus', 'potato','onion', 'leek', 'shallot'],
+                potato: ['tomato', 'cucumber', 'pumpkin', 'Squash', 'sunflower', 'carrot','kohlrabi', 'turnip', 'radish','fennel'],
+                radish: ['Hyssop', 'potato', 'turnip', 'mustardGreens', 'sunflower', 'celery','onion', 'garlic', 'cress'],
+                rutabaga: ['mustardGreens', 'turnip', 'broccoli'],
+                spinach: ['beet', 'kale', 'brusselSprouts', 'sunflower', 'fennel', 'Rhubarb','chive', 'Parsley', 'cress','leek', 'garlic'],
+                summerSquash:  ['potato', 'pumpkin', 'winterSquash', 'broccoli', 'cabbage', 'cauliflower','cucumber', 'melon', 'tomato','fennel', 'rosemary', 'Sage'],
+                sweetPotato: ['potato', 'pumpkin', 'Squash', 'cucumber', 'melon', 'tomato','broccoli', 'cabbage', 'cauliflower','fennel', 'rosemary', 'Sage'],
+                swissChard: ['kale', 'brusselSprouts', 'sunflower', 'fennel', 'Rhubarb', 'chive','Parsley', 'cress', 'leek','garlic', 'potato'],
+                tomato:['broccoli', 'cabbage', 'cauliflower', 'fennel', 'corn', 'potato','Peppers', 'eggplant', 'cucumber','kohlrabi', 'rutabaga', 'turnip' ],
+                turnip: ['mustardGreens', 'potato', 'Parsnips', 'sunflower', 'cress', 'rutabaga' ],
+                winterSquash: ['potato', 'pumpkin', 'summerSquash', 'broccoli', 'cabbage', 'cauliflower','cucumber', 'melon', 'tomato','fennel', 'rosemary', 'Sage' ], 
+                zucchini: ['potato', 'pumpkin', 'winterSquash', 'broccoli', 'cabbage', 'cauliflower','cucumber', 'melon', 'tomato','fennel', 'rosemary', 'Sage' ],
+                // Add more plants here with their respective enemies
+                };
+
+                // Neutral status data
+                const neutralData = {
+                corn: ["carrot", "radish", "onion"],
+                tomato: ["lettuce", "spinach", "pepper"],
+                broccoli: ["lettuce", "onion", "potato"],
+                pea: ["lettuce", "radish", "tomato"],
+                squash: ["carrot", "lettuce", "tomato"],
+                carrot: ["lettuce", "cabbage", "spinach"],
+                radish: ["lettuce", "onion", "tomato"],
+                onion: ["spinach", "cabbage", "potato"]
+                // Add more plants here with their respective neutrals
+                };
+
+                // Function to generate the grid based on the specified dimensions
+                function generateGrid() {
+                var rows = document.getElementById("rows").value;
+                var cols = document.getElementById("cols").value;
+                var grid = document.getElementById("grid");
+
+                // Clear existing grid
+                grid.innerHTML = "";
+
+                // Generate rows and columns
+                for (var i = 0; i < rows; i++) {
+                var row = document.createElement("tr");
+                for (var j = 0; j < cols; j++) {
+                var cell = document.createElement("td");
+                cell.className = "cell";
+                cell.id = String.fromCharCode(65 + i) + (j + 1); // Generate cell ID (e.g., A1, A2, B1, B2, etc.)
+                cell.addEventListener("click", function() {
+                highlightCell(this);
+                });
+                row.appendChild(cell);
+                }
+                grid.appendChild(row);
+                }
+                }
+
+                // Function to reset the grid
+                function resetGrid() {
+                    var grid = document.getElementById("grid");
+                    var cells = grid.getElementsByTagName("td");
+                    for (var i = 0; i < cells.length; i++) {
+                        cells[i].textContent = ""; // Clear cell content
+                        cells[i].className = "cell"; // Reset cell class
+                    }
+                    var statusDiv = document.getElementById("status");
+                    statusDiv.textContent = "Plant Status: None"; // Reset status
+}
+
+                // Function to highlight selected cell
+                function highlightCell(cell) {
+                var selectedCell = document.getElementsByClassName("selected")[0];
+                if (selectedCell) {
+                selectedCell.classList.remove("selected");
+                }
+                cell.classList.add("selected");
+                }
+
+                // Function to check if a cell and its surroundings allow planting a plant
+                function canPlant(selectedPlant, cell, grid) {
+                var rowIndex = cell.parentNode.rowIndex;
+                var colIndex = cell.cellIndex;
+
+                // Check surrounding cells
+                for (var i = rowIndex - 1; i <= rowIndex + 1; i++) {
+                for (var j = colIndex - 1; j <= colIndex + 1; j++) {
+                // Skip the selected cell itself
+                if (i === rowIndex && j === colIndex) {
+                continue;
+                }
+
+                // Check if the cell is out of bounds
+                if (i < 0 || i >= grid.rows.length || j < 0 || j >= grid.rows[i].cells.length) {
+                continue;
+                }
+
+                var neighborCell = grid.rows[i].cells[j];
+                var neighborPlant = neighborCell.textContent.toLowerCase();
+
+                // Check if the neighboring cell contains an enemy plant
+                if (neighborPlant && (enemyData[selectedPlant].includes(neighborPlant) || enemyData[neighborPlant].includes(selectedPlant))) {
+                return false;
+                }
+                }
+                }
+
+                // All surrounding cells allow planting
+                return true;
+                }
+
+
+
+                // Function to plant the selected plant
+                function plant() {
+                var plantSelect = document.getElementById("plantSelect");
+                var selectedPlant = plantSelect.value;
+                var statusDiv = document.getElementById("status");
+
+                if (selectedPlant === "none") {
+                alert("Please select a plant.");
+                return;
+                }
+
+                var grid = document.getElementById("grid");
+                var selectedCell = document.querySelector(".selected");
+
+                if (!selectedCell) {
+                alert("Please select a location on the grid.");
+                return;
+                }
+
+                // Check if the selected cell and its surroundings allow planting
+                if (!canPlant(selectedPlant, selectedCell, grid)) {
+                alert("You cannot plant " + selectedPlant + " here.");
+                return;
+                }
+
+                // Plant the selected plant
+                selectedCell.textContent = selectedPlant.charAt(0).toUpperCase() + selectedPlant.slice(1);
+                selectedCell.className = "plant " + selectedPlant;
+                statusDiv.textContent = "Plant Status: " + selectedPlant.charAt(0).toUpperCase() + selectedPlant.slice(1);
+                // Clear selection
+               // plantSelect.value = "none";
+               // selectedCell.classList.remove("selected");
+                }
+                </script>
+        </body>
+    </html>
