@@ -257,38 +257,46 @@
                 }
                 cell.classList.add("selected");
                 }
-
-                // Function to check if a cell and its surroundings allow planting a plant
                 function canPlant(selectedPlant, cell, grid) {
                 var rowIndex = cell.parentNode.rowIndex;
                 var colIndex = cell.cellIndex;
-
+                
+                // Split the selectedPlant name by spaces
+                var selectedPlantWords = selectedPlant.split(" ");
+            
                 // Check surrounding cells
                 for (var i = rowIndex - 1; i <= rowIndex + 1; i++) {
                 for (var j = colIndex - 1; j <= colIndex + 1; j++) {
                 // Skip the selected cell itself
                 if (i === rowIndex && j === colIndex) {
-                continue;
+                    continue;
                 }
-
+    
                 // Check if the cell is out of bounds
                 if (i < 0 || i >= grid.rows.length || j < 0 || j >= grid.rows[i].cells.length) {
-                continue;
+                    continue;
                 }
-
+    
                 var neighborCell = grid.rows[i].cells[j];
                 var neighborPlant = neighborCell.textContent.toLowerCase();
-
+                
                 // Check if the neighboring cell contains an enemy plant
-                if (neighborPlant && (enemyData[selectedPlant].includes(neighborPlant) || enemyData[neighborPlant].includes(selectedPlant))) {
-                return false;
+                for (var k = 0; k < selectedPlantWords.length; k++) {
+                if (neighborPlant && enemyData[selectedPlantWords[k]].includes(neighborPlant)) {
+                    return false;
+                }
+                // Also check if the enemy plant has any of the words in selectedPlant
+                if (neighborPlant && enemyData[neighborPlant].includes(selectedPlantWords[k])) {
+                    return false;
                 }
                 }
                 }
-
+                }
+            
                 // All surrounding cells allow planting
                 return true;
                 }
+
 
 
 
