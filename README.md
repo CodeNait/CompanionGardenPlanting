@@ -1,1 +1,1 @@
-# CompanionGardening
+# CompanionGardenPlanting
